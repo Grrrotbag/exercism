@@ -20,30 +20,22 @@ mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology
 
 const { Schema } = mongoose;
 
-const ExerciseSchema = new Schema({
-  description: String,
-  duration: Number,
-  date: Date,
-});
-
 const UserSchema = new Schema({
   username: { type: String, required: true, unique: "Username already taken" },
-  log: [ExerciseSchema],
+  exercises: [
+    {
+      description: String,
+      duration: String,
+      date: Date,
+    },
+  ],
 });
 
 let User = mongoose.model("User", UserSchema);
-let Exercise = mongoose.model("Exercise", ExerciseSchema);
 
 app.use(cors());
 app.use(express.static("public"));
 
-// =============================================================================
-// Functions
-// =============================================================================
-const createNewUser = (username) => {
-  let newUser = new User({ username: username });
-  newUser.save();
-};
 // =============================================================================
 // Server
 // =============================================================================
@@ -80,12 +72,42 @@ app.get("/api/exercise/users", async (req, res) => {
   res.send(all);
 });
 
-app.post("api/exercise/add", (req, res) => {
+app.post("/api/exercise/add", async (req, res) => {
   // You can POST to /api/exercise/add with form data userId=_id, description, duration,
   // and optionally date. If no date is supplied, the current date will be used.
   // The response returned will be the user object with the exercise fields added.
   // Return {"_id":"6004774f0aa40e05f2b893fc","username":"bobby","date":"Thu Jan 16 2020","duration":3,"description":"Sex"}
-  const { userId, decription, duration, date } = req.body;
+  console.log(req.body);
+  const { userId, description, duration, date } = req.body;
+
+  const payload = {
+    description: description,
+    duration: duration,
+    date: date.length > 0 ? new Date(date) : new Date(),
+  };
+
+  try {
+    let user = await User.findById(userId);
+
+    if (user) {
+      user.exercises.push(payload);
+      user.save();
+      res.json({
+        _id: user._id,
+        username: user.username,
+        date: payload.date.toISOString().substring(0, 10),
+        duration: payload.duration,
+        description: payload.description,
+      });
+    } else {
+      res.json({
+        Error: "user does not exist",
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 });
 
 app.get("/api/exercise/log/:userId=_id", (req, res) => {
