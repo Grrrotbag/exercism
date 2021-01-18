@@ -132,35 +132,27 @@ app.get("/api/exercise/log", (req, res) => {
   // limit is an integer of how many logs to send back.
   console.log(req.query);
   const { userId, from, to, limit } = req.query;
-  console.log(userId, from, to, limit);
+  console.log("userId: ", userId, "from: ", new Date(from), "to: ", new Date(to), "limit: ", limit);
 
   User.findById({ _id: userId }, (err, doc) => {
     if (doc === "null") {
       res.send("error: No user with that ID");
     } else {
-      console.log("doc: ", doc);
       let data = doc.log;
-      console.log("data: ", data);
 
-      // TODO: might want to ensure log is longer than zero?
-      // let fromDate = req.query.from ? new Date(req.query.from) : new Date(data[0].date);
-      // let toDate = req.query.toDate ? new Date(req.query.to) : new Date();
-      // let limit = req.query.limit ? Number(req.query.limit) : data.filter((x) => x === 2).length;
-      // let limit = req.query.limit ? Number(req.query.limit) : 1000;
-      let fromDate = new Date(req.query.from);
-      let toDate = new Date(req.query.to);
-      let limit = Number(req.query.limit);
+      let fromDate = isValidDate(new Date(req.query.from)) ? new Date(req.query.from) : new Date(data[0].date);
+      let toDate = isValidDate(new Date(req.query.to)) ? new Date(req.query.to) : new Date();
+      let limit = req.query.limit ? Number(req.query.limit) : Number(data.length);
 
       console.log("from: ", fromDate, "to: ", toDate, "limit: ", limit);
-      if (isValidDate(toDate)) {
-        data = data.filter((exercise) => exercise.date >= fromDate && exercise.date <= toDate);
-      } else if (isValidDate(fromDate)) {
-        data = data.filter((exercise) => exercise.date >= fromDate);
-      }
-      // if limit not included you get NaN
-      if (!isNaN(limit) && data.length > limit) {
-        data = data.slice(0, limit);
-      }
+
+      data = data
+        .filter((exercise) => exercise.date <= toDate)
+        .filter((exercise) => exercise.date >= fromDate)
+        .slice(0, limit);
+
+      // Add count of returned exercises
+      data["count"] = data[0].length;
 
       console.log("filtered: ", data);
       res.send({ log: data });
