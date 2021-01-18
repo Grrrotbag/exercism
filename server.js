@@ -22,7 +22,7 @@ const { Schema } = mongoose;
 
 const UserSchema = new Schema({
   username: { type: String, required: true, unique: "Username already taken" },
-  exercises: [
+  log: [
     {
       description: String,
       duration: String,
@@ -35,6 +35,16 @@ let User = mongoose.model("User", UserSchema);
 
 app.use(cors());
 app.use(express.static("public"));
+
+// =============================================================================
+// functions
+// =============================================================================
+// Detect an invalid date - which is what you get if no date is in the query string.
+// https://stackoverflow.com/questions/1353684/detecting-an-invalid-date-date-instance-in-javascript
+
+const isValidDate = (date) => {
+  return date instanceof Date && !isNaN(date);
+};
 
 // =============================================================================
 // Server
@@ -90,7 +100,7 @@ app.post("/api/exercise/add", async (req, res) => {
     let user = await User.findById(userId);
 
     if (user) {
-      user.exercises.push(payload);
+      user.log.push(payload);
       user.save();
       res.json({
         _id: user._id,
@@ -110,7 +120,7 @@ app.post("/api/exercise/add", async (req, res) => {
   }
 });
 
-app.get("/api/exercise/log/:userId=_id", (req, res) => {
+app.get("/api/exercise/log", (req, res) => {
   // You can make a GET request to /api/exercise/log with a parameter of userId=_id
   // to retrieve a full exercise log of any user. The returned response will be the user
   // object with a log array of all the exercises added. Each log item has the description,
@@ -120,6 +130,42 @@ app.get("/api/exercise/log/:userId=_id", (req, res) => {
   // You can add from, to and limit parameters to a /api/exercise/log request to retrieve
   // part of the log of any user. from and to are dates in yyyy-mm-dd format.
   // limit is an integer of how many logs to send back.
+  console.log(req.query);
+  const { userId, from, to, limit } = req.query;
+  console.log(userId, from, to, limit);
+
+  User.findById({ _id: userId }, (err, doc) => {
+    if (doc === "null") {
+      res.send("error: No user with that ID");
+    } else {
+      console.log("doc: ", doc);
+      let data = doc.log;
+      console.log("data: ", data);
+
+      // TODO: might want to ensure log is longer than zero?
+      // let fromDate = req.query.from ? new Date(req.query.from) : new Date(data[0].date);
+      // let toDate = req.query.toDate ? new Date(req.query.to) : new Date();
+      // let limit = req.query.limit ? Number(req.query.limit) : data.filter((x) => x === 2).length;
+      // let limit = req.query.limit ? Number(req.query.limit) : 1000;
+      let fromDate = new Date(req.query.from);
+      let toDate = new Date(req.query.to);
+      let limit = Number(req.query.limit);
+
+      console.log("from: ", fromDate, "to: ", toDate, "limit: ", limit);
+      if (isValidDate(toDate)) {
+        data = data.filter((exercise) => exercise.date >= fromDate && exercise.date <= toDate);
+      } else if (isValidDate(fromDate)) {
+        data = data.filter((exercise) => exercise.date >= fromDate);
+      }
+      // if limit not included you get NaN
+      if (!isNaN(limit) && data.length > limit) {
+        data = data.slice(0, limit);
+      }
+
+      console.log("filtered: ", data);
+      res.send({ log: data });
+    }
+  });
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
