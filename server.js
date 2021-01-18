@@ -129,9 +129,7 @@ app.get("/api/exercise/log", (req, res) => {
   // You can add from, to and limit parameters to a /api/exercise/log request to retrieve
   // part of the log of any user. from and to are dates in yyyy-mm-dd format.
   // limit is an integer of how many logs to send back.
-  console.log(req.query);
   const { userId, from, to, limit } = req.query;
-  console.log("userId: ", userId, "from: ", new Date(from), "to: ", new Date(to), "limit: ", limit);
 
   User.findById({ _id: userId }, (err, doc) => {
     if (doc === "null") {
