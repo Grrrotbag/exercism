@@ -3,21 +3,25 @@
   <head>
     <title>Exercism</title>
     <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Monoton&display=swap" rel="stylesheet" />
-    <!-- <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" /> -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@700&family=Monoton&family=Roboto+Mono&display=swap"
+      rel="stylesheet"
+    />
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
 
   <body>
     <div class="container">
       <h1>Exercism</h1>
-      <form action="/api/exercise/new-user" method="post">
-        <h3>Create a New User</h3>
+      <h2>A simple exercise tracking api</h2>
+      <form id="user-form" action="/api/exercise/new-user" method="post">
+        <h3>Add a new user</h3>
         <p><code>POST /api/exercise/new-user</code></p>
         <input id="uname" type="text" name="username" placeholder="username" />
         <input type="submit" value="Submit" />
       </form>
-      <form action="/api/exercise/add" method="post">
+      <br />
+      <form id="exercise-form" action="/api/exercise/add" method="post">
         <h3>Add exercises</h3>
         <p><code>POST /api/exercise/add</code></p>
         <input id="uid" type="text" name="userId" placeholder="userId*" />
@@ -26,12 +30,12 @@
         <input id="dat" type="text" name="date" placeholder="date (yyyy-mm-dd)" />
         <input type="submit" value="Submit" />
       </form>
-      <p>
+      <div class="explanation">
         <strong>GET users's exercise log: </strong
         ><code>GET /api/exercise/log?{userId}[&amp;from][&amp;to][&amp;limit]</code>
-      </p>
-      <p><strong>{ }</strong> = required, <strong>[ ]</strong> = optional</p>
-      <p><strong>from, to</strong> = dates (yyyy-mm-dd); <strong>limit</strong> = number</p>
+        <p><strong>{ }</strong> = required, <strong>[ ]</strong> = optional</p>
+        <p><strong>from, to</strong> = dates (yyyy-mm-dd); <strong>limit</strong> = number</p>
+      </div>
     </div>
   </body>
 </html>
