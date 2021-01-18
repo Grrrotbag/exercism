@@ -76,7 +76,7 @@ app.post("/api/exercise/add", async (req, res) => {
   // You can POST to /api/exercise/add with form data userId=_id, description, duration,
   // and optionally date. If no date is supplied, the current date will be used.
   // The response returned will be the user object with the exercise fields added.
-  // Return {"_id":"6004774f0aa40e05f2b893fc","username":"bobby","date":"Thu Jan 16 2020","duration":3,"description":"Sex"}
+  // Return {"_id":"6004774f0aa40e05f2b893fc","username":"bobby","date":"Thu Jan 16 2020","duration":3,"description":"Jogging"}
   console.log(req.body);
   const { userId, description, duration, date } = req.body;
 
