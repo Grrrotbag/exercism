@@ -104,7 +104,7 @@ app.post("/api/exercise/add", async (req, res) => {
       res.json({
         _id: user._id,
         username: user.username,
-        date: payload.date.toISOString().substring(0, 10),
+        date: payload.date.toUTCString().substring(0, 10),
         duration: payload.duration,
         description: payload.description,
       });
