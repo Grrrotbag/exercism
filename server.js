@@ -79,6 +79,8 @@ app.get("/api/exercise/users", async (req, res) => {
 app.post("/api/exercise/add", async (req, res) => {
   const { userId, description, duration, date } = req.body;
 
+  console.log("request: ", userId, description, duration, date);
+
   const payload = {
     description: description,
     duration: Number(duration),
@@ -111,7 +113,8 @@ app.post("/api/exercise/add", async (req, res) => {
 
 app.get("/api/exercise/log", (req, res) => {
   const { userId, from, to, limit } = req.query;
-
+  console.log(from, to, limit);
+  console.log(new Date(from), "-", new Date(to));
   User.findById({ _id: userId }, (err, doc) => {
     if (doc === "null") {
       res.send("error: No user with that ID");
