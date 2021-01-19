@@ -53,7 +53,6 @@ app.get("/", (req, res) => {
 });
 
 app.post("/api/exercise/new-user", async (req, res) => {
-  console.log(req.body);
   let username = req.body.username;
 
   const existingUser = await User.findOne({ username: username });
@@ -79,14 +78,11 @@ app.get("/api/exercise/users", async (req, res) => {
 app.post("/api/exercise/add", async (req, res) => {
   const { userId, description, duration, date } = req.body;
 
-  console.log("ADD request: ", userId, description, duration, date);
-
   let addDate = isValidDate(new Date(date)) ? new Date(date) : new Date();
 
   const payload = {
     description: description,
     duration: Number(duration),
-    // date: date.length > 0 ? new Date(date) : new Date(),
     date: addDate,
   };
 
@@ -116,8 +112,7 @@ app.post("/api/exercise/add", async (req, res) => {
 
 app.get("/api/exercise/log", (req, res) => {
   const { userId, from, to, limit } = req.query;
-  console.log("LOG request: ", from, to, limit);
-  console.log(new Date(from), "-", new Date(to));
+
   User.findById({ _id: userId }, (err, doc) => {
     if (doc === "null") {
       res.send("error: No user with that ID");
@@ -128,8 +123,6 @@ app.get("/api/exercise/log", (req, res) => {
       let toDate = isValidDate(new Date(to)) ? new Date(to) : new Date();
       let itemLimit = limit ? Number(limit) : Number(data.length);
 
-      console.log("from: ", fromDate, "to: ", toDate, "limit: ", limit);
-
       data = data
         .filter((exercise) => exercise.date <= toDate)
         .filter((exercise) => exercise.date >= fromDate)
@@ -137,14 +130,11 @@ app.get("/api/exercise/log", (req, res) => {
 
       const payload = data.map(function (exercise) {
         return {
-          // _id: exercise._id,
           description: exercise.description,
           duration: exercise.duration,
           date: exercise.date.toString().substring(0, 15),
         };
       });
-
-      console.log("payload: ", payload);
 
       res.json({
         _id: userId,
@@ -157,5 +147,5 @@ app.get("/api/exercise/log", (req, res) => {
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
-  console.log("Your app is listening on port " + listener.address().port);
+  console.log("Exercism is listening on port " + listener.address().port);
 });
