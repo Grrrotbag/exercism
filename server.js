@@ -131,7 +131,7 @@ app.get("/api/exercise/log", (req, res) => {
 
       const payload = data.map(function (exercise) {
         return {
-          _id: exercise._id,
+          // _id: exercise._id,
           description: exercise.description,
           duration: exercise.duration,
           date: exercise.date.toString().substring(0, 15),
