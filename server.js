@@ -79,12 +79,15 @@ app.get("/api/exercise/users", async (req, res) => {
 app.post("/api/exercise/add", async (req, res) => {
   const { userId, description, duration, date } = req.body;
 
-  console.log("request: ", userId, description, duration, date);
+  console.log("ADD request: ", userId, description, duration, date);
+
+  let addDate = isValidDate(new Date(date)) ? new Date(date) : new Date();
 
   const payload = {
     description: description,
     duration: Number(duration),
-    date: date.length > 0 ? new Date(date) : new Date(),
+    // date: date.length > 0 ? new Date(date) : new Date(),
+    date: addDate,
   };
 
   try {
@@ -113,7 +116,7 @@ app.post("/api/exercise/add", async (req, res) => {
 
 app.get("/api/exercise/log", (req, res) => {
   const { userId, from, to, limit } = req.query;
-  console.log(from, to, limit);
+  console.log("LOG request: ", from, to, limit);
   console.log(new Date(from), "-", new Date(to));
   User.findById({ _id: userId }, (err, doc) => {
     if (doc === "null") {
@@ -141,7 +144,7 @@ app.get("/api/exercise/log", (req, res) => {
         };
       });
 
-      console.log(payload);
+      console.log("payload: ", payload);
 
       res.json({
         _id: userId,
