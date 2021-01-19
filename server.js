@@ -24,7 +24,7 @@ const UserSchema = new Schema({
   log: [
     {
       description: String,
-      duration: String,
+      duration: Number,
       date: Date,
     },
   ],
@@ -91,7 +91,7 @@ app.post("/api/exercise/add", async (req, res) => {
 
   const payload = {
     description: description,
-    duration: duration,
+    duration: Number(duration),
     date: date.length > 0 ? new Date(date) : new Date(),
   };
 
@@ -106,7 +106,7 @@ app.post("/api/exercise/add", async (req, res) => {
         description: payload.description,
         duration: payload.duration,
         _id: user._id,
-        date: payload.date.toUTCString().substring(0, 16),
+        date: payload.date.toString().substring(0, 15),
       });
     } else {
       res.json({
