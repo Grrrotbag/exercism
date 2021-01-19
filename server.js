@@ -102,11 +102,11 @@ app.post("/api/exercise/add", async (req, res) => {
       user.log.push(payload);
       user.save();
       res.json({
-        _id: user._id,
         username: user.username,
-        date: payload.date.toUTCString().substring(0, 10),
-        duration: payload.duration,
         description: payload.description,
+        duration: payload.duration,
+        _id: user._id,
+        date: payload.date.toUTCString().substring(0, 16),
       });
     } else {
       res.json({
@@ -137,16 +137,16 @@ app.get("/api/exercise/log", (req, res) => {
     } else {
       let data = doc.log;
 
-      let fromDate = isValidDate(new Date(req.query.from)) ? new Date(req.query.from) : new Date(data[0].date);
-      let toDate = isValidDate(new Date(req.query.to)) ? new Date(req.query.to) : new Date();
-      let limit = req.query.limit ? Number(req.query.limit) : Number(data.length);
+      let fromDate = isValidDate(new Date(from)) ? new Date(req.query.from) : new Date(data[0].date);
+      let toDate = isValidDate(new Date(to)) ? new Date(req.query.to) : new Date();
+      let itemLimit = limit ? Number(limit) : Number(data.length);
 
       console.log("from: ", fromDate, "to: ", toDate, "limit: ", limit);
 
       data = data
         .filter((exercise) => exercise.date <= toDate)
         .filter((exercise) => exercise.date >= fromDate)
-        .slice(0, limit);
+        .slice(0, itemLimit);
 
       // Add count of returned exercises
       data["count"] = data[0].length;
